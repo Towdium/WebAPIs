@@ -11,6 +11,12 @@ from requests.exceptions import ReadTimeout
 
 from webapi.constants import cache as cache_root
 
+try:
+    FileNotFoundError
+except NameError:
+    # noinspection PyShadowingBuiltins
+    FileNotFoundError = IOError
+
 cache = join(cache_root, 'unsplash')
 none_category = '_none'
 lock = Lock()
