@@ -73,7 +73,7 @@ def write_cache(content, mime, width, height, category):
         makedirs(path, exist_ok=True)
         files = listdir(path)
         name = int(time())
-        times = sorted(map(lambda i: int(splitext(i)[0]), files), reverse=True)
+        times = sorted(map(lambda filename: int(splitext(filename)[0]), files), reverse=True)
         if len(times) != 0 and times[0] == name:
             for i in range(1, len(times)):
                 if times[i] != times[0] - i:
