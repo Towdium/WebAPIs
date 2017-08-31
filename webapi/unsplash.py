@@ -9,9 +9,9 @@ from time import time
 from requests import get
 from requests.exceptions import ReadTimeout
 
-import webapi
+from webapi.constants import cache as cache_root
 
-cache = join(webapi.cache, 'unsplash')
+cache = join(cache_root, 'unsplash')
 none_category = '_none'
 lock = Lock()
 

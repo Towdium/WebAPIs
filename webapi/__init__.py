@@ -2,7 +2,6 @@ from flask import Flask, Response, request
 
 import webapi.unsplash
 
-cache = '/var/cache/'
 app = Flask(__name__)
 
 
