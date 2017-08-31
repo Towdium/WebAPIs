@@ -1,7 +1,7 @@
 from mimetypes import guess_extension, guess_type
 from multiprocessing import Lock
 from os import makedirs, listdir, remove
-from os.path import join, splitext
+from os.path import join, splitext, exists
 from random import choice
 from threading import Thread
 from time import time
@@ -47,7 +47,7 @@ def find_cache(width, height, category):
                 mime = guess_type(dest)[0]
                 with open(dest, 'rb') as f:
                     return f.read(), mime
-    except FileNotFoundError:
+    except (FileNotFoundError, OSError):
         return None
 
 
@@ -76,7 +76,8 @@ def write_cache(content, mime, width, height, category):
         category = none_category
     path = join(cache, category, str(width) + '*' + str(height))
     with lock:
-        makedirs(path, exist_ok=True)
+        if not exists(path):
+            makedirs(path)
         files = listdir(path)
         name = int(time())
         times = sorted(map(lambda filename: int(splitext(filename)[0]), files), reverse=True)
