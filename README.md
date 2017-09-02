@@ -18,12 +18,11 @@ It uses http GET to provide the pictures. Currently there are 3 arguments, all o
 - __width__: The picture width in pixel. Default is 1080.
 - __height__: The picture height in pixel. Default is 720.
 
-Long story short, it you want a nature photo with size of 800*300, you can do like this:
+Long story short, it you want a nature photo with size of 1920*1080, you can do like this:
 
 ```
-http://api.towdium.me/unsplash?category=nature&width=800&height=300
+http://api.towdium.me/unsplash?category=nature&width=1920&height=1080
 ```
+You can have try: [example picture](http://api.towdium.me/unsplash?category=nature&width=1920&height=1080)
 
-Then you will get:
-
-![example](http://api.towdium.me/unsplash?category=nature&width=800&height=300)
+But sadly, for some reason github will not accept dynamic picture links. It will also try to cache it. And it also won't support html scripts that insert a webpage. But of course it will work on your site.
