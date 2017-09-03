@@ -5,10 +5,10 @@ proxy=$(ip route get 1 | awk '{print $NF;exit}')
 mkdir /tmp/deploy
 cd /tmp/deploy
 cp -r /home/towdium/Documents/Dev/WebAPIs ./WebAPIs
-cp -r /home/towdium/Documents/Dev/alpine-nginx-gunicorn alpine-nginx-gunicorn
-rm -rf alpine-nginx-gunicorn/app
-mv WebAPIs alpine-nginx-gunicorn/app
-cd alpine-nginx-gunicorn/
+cp -r /home/towdium/Documents/Dev/nginx-gunicorn nginx-gunicorn
+rm -rf nginx-gunicorn/app
+mv WebAPIs nginx-gunicorn/app
+cd nginx-gunicorn/
 docker build --build-arg HTTP_PROXY=http://$proxy:1080 -t alpine-nginx-gunicorn .
 docker stop server
 docker rm server

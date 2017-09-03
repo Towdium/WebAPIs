@@ -4,12 +4,10 @@ set -x
 mkdir /tmp/deploy
 cd /tmp/deploy
 git clone https://github.com/Towdium/WebAPIs.git
-git clone https://github.com/Towdium/alpine-nginx-gunicorn.git
-cp -r /home/towdium/Documents/Dev/WebAPIs ./WebAPIs
-cp -r /home/towdium/Documents/Dev/alpine-nginx-gunicorn alpine-nginx-gunicorn
-rm -rf alpine-nginx-gunicorn/app
-mv WebAPIs alpine-nginx-gunicorn/app
-cd alpine-nginx-gunicorn/
+git clone https://github.com/Towdium/nginx-gunicorn.git
+rm -rf nginx-gunicorn/app
+mv WebAPIs nginx-gunicorn/app
+cd nginx-gunicorn/
 docker build -t alpine-nginx-gunicorn .
 docker stop server
 docker rm server

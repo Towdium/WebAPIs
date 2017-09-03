@@ -80,7 +80,9 @@ def write_cache(content, mime, width, height, category):
             makedirs(path)
         files = listdir(path)
         name = int(time())
-        times = sorted(map(lambda filename: int(splitext(filename)[0]), files), reverse=True)
+        times = sorted(
+            map(lambda filename:  int(splitext(filename)[0]), files),
+            reverse=True)
         if len(times) != 0 and times[0] == name:
             for i in range(1, len(times)):
                 if times[i] != times[0] - i:
@@ -92,7 +94,8 @@ def write_cache(content, mime, width, height, category):
         with open(dest, 'wb') as f:
             f.write(content)
         if len(files) > 4:
-            remove(join(path, [i for i in files if i.startswith(str(times[-1]))][0]))
+            remove(join(
+                path, [i for i in files if i.startswith(str(times[-1]))][0]))
 
 
 def fetch_cache(width, height, category):
