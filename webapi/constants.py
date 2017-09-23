@@ -1,1 +1,1 @@
-cache = '/var/cache/'
+cache = '/var/cache/web/'
