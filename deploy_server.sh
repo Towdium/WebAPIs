@@ -5,7 +5,7 @@ mkdir /tmp/deploy
 cd /tmp/deploy
 git clone https://github.com/Towdium/WebAPIs.git
 git clone -b alpine-nginx-gunicorn https://github.com/Towdium/DockerImages.git
-rm -rf nginx-gunicorn/app
+rm -rf DockerImages/app
 mv WebAPIs DockerImages/app
 cd DockerImages/
 docker build -t alpine-nginx-gunicorn .
