@@ -13,4 +13,3 @@ docker stop server
 docker rm server
 docker run -p 80:80 -d --restart unless-stopped --name server alpine-nginx-gunicorn
 rm -rf /tmp/deploy
-

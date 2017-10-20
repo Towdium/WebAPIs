@@ -2,9 +2,8 @@ from mimetypes import guess_extension, guess_type
 from multiprocessing import Lock
 from os import makedirs, listdir, remove
 from os.path import join, splitext, exists
-from random import choice
 from threading import Thread
-from time import time
+from time import time, sleep
 
 from requests import get
 from requests.exceptions import ReadTimeout
@@ -20,30 +19,30 @@ except NameError:
 cache = join(cache_root, 'unsplash')
 none_category = '_none'
 lock = Lock()
+count = 0
+workers = set()
 
 
-def request(width, height, category=None):
-    if category is not None:
-        category = category.lower()
-    ret = find_cache(width, height, category)
+def request(path):
+    ret = find_cache(path)
     if ret:
-        fetch_cache(width, height, category)
+        fetch_cache(path)
         return ret
     else:
-        return fetch_online(width, height, category)
+        return fetch_online(path)
 
 
-def find_cache(width, height, category):
-    if category is None:
-        category = none_category
-    path = join(cache, category, str(width) + '*' + str(height))
+def find_cache(path):
+    global count
+    path = join(cache, path)
     try:
         with lock:
             files = listdir(path)
             if len(files) == 0:
                 return None
             else:
-                dest = join(path, choice(files))
+                dest = join(path, files[count % len(files)])
+                count = count + 1
                 mime = guess_type(dest)[0]
                 with open(dest, 'rb') as f:
                     return f.read(), mime
@@ -51,66 +50,49 @@ def find_cache(width, height, category):
         return None
 
 
-def fetch_online(width, height, category):
-    url = 'https://source.unsplash.com/'
-    if category is not None:
-        url += 'category/' + category + '/'
-    url += str(width) + 'x' + str(height) + '/'
+def fetch_online(path):
+    url = 'https://source.unsplash.com/' + path
     # a typical link: https://source.unsplash.com/category/nature/2600x500
     try:
         resp = get(url, timeout=10, stream=True)
         ret = resp.raw.read()
         mime = resp.headers['Content-Type']
-        write_cache(ret, mime, width, height, category)
+        write_cache(ret, mime, path)
         return ret, mime
     except ReadTimeout:
-        fetch_cache(width, height, category)
+        fetch_cache(path)
         return None
 
 
-def write_cache(content, mime, width, height, category):
+def write_cache(content, mime, path):
     if len(content) < 100:
         return
-
-    if category is None:
-        category = none_category
-    path = join(cache, category, str(width) + '*' + str(height))
+    file_path = join(cache, path)
     with lock:
-        if not exists(path):
-            makedirs(path)
-        files = listdir(path)
-        name = int(time())
-        times = sorted(
-            map(lambda filename:  int(splitext(filename)[0]), files),
-            reverse=True)
-        if len(times) != 0 and times[0] == name:
-            for i in range(1, len(times)):
-                if times[i] != times[0] - i:
-                    name = times[0] - i
-                    break
-            if times[0] == name:
-                return
-        dest = join(path, str(int(time())) + guess_extension(mime))
+        if not exists(file_path):
+            makedirs(file_path)
+        files = sorted(listdir(file_path), key=lambda name: int(splitext(name)[0]))
+        dest = join(file_path, str(int(time())) + guess_extension(mime))
         with open(dest, 'wb') as f:
             f.write(content)
-        if len(files) > 4:
-            remove(join(
-                path, [i for i in files if i.startswith(str(times[-1]))][0]))
+        if len(files) > 2:
+            remove(join(file_path, files[0]))
 
 
-def fetch_cache(width, height, category):
+def fetch_cache(path):
     def fetch():
-        try:
-            url = 'https://source.unsplash.com/'
-            if category is not None:
-                url += 'category/' + category + '/'
-            url += str(width) + 'x' + str(height) + '/'
-            resp = get(url, timeout=20, stream=True)
-            ret = resp.raw.read()
-            mime = resp.headers['Content-Type']
-            write_cache(ret, mime, width, height, category)
-        except ReadTimeout:
-            pass
+        if path not in workers:
+            try:
+                workers.add(path)
+                url = 'https://source.unsplash.com/' + path
+                resp = get(url, timeout=20, stream=True)
+                ret = resp.raw.read()
+                mime = resp.headers['Content-Type']
+                write_cache(ret, mime, path)
+                sleep(2)
+                workers.remove(path)
+            except ReadTimeout:
+                pass
 
     thread = Thread(target=fetch)
     # thread.setDaemon(True)

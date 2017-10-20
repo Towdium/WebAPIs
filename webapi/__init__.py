@@ -1,4 +1,4 @@
-from flask import Flask, Response, request
+from flask import Flask, Response
 
 import webapi.unblock as lib_unblock
 import webapi.unsplash as lib_unsplash
@@ -11,12 +11,9 @@ def root():
     return 'Welcome to towdium.me APIs'
 
 
-@app.route('/unsplash')
-def unsplash():
-    cat = request.args.get('category', None)
-    height = request.args.get('height', '720')
-    width = request.args.get('width', '1080')
-    data = lib_unsplash.request(width, height, cat)
+@app.route('/unsplash/<path:path>')
+def unsplash(path):
+    data = lib_unsplash.request(path)
     return '' if data is None else Response(data[0], mimetype=data[1])
 
 
