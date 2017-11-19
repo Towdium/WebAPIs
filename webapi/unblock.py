@@ -21,7 +21,7 @@ def request(filename):
     if not exists(cache):
         makedirs(cache)
     with open(name, 'w') as f:
-        ret = ret.replace('proxy.uku.im', 'cn.towdium.me')
+        ret = ret.replace('proxy.uku.im', 'bri.towdium.me')
         ret = ret.replace('{any:[],"bangumi.bilibili.com":[/^\/index\/ding\-count\.json$/i]}', '{any:[]}')
         f.write(ret)
 
